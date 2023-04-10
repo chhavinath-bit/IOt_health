@@ -46,7 +46,7 @@ void loop()
   Serial.print("index = "); Serial.println(indexUV);
 
   clEnergy = energyCalculate(indexUV);
-  Serial.print("Total Energy on unit area until now "); Serial.print(clEnergy); Serial.println(" W-s/m^2")
+  Serial.print("Total Energy on unit area until now "); Serial.print(clEnergy); Serial.println(" mW-s/m^2");
 
   delay(1000);
   sendDataTS();
@@ -137,8 +137,8 @@ int uvIndex(int sensor){
 
 float energyCalculate(int index){
   int time_rect = 1;  // in seconds
-  float uvIntensity = index/40;
-  float energy  = (uvIntensity*time_rect)
+  float uvIntensity = (index*1000)/40;
+  float energy  = (uvIntensity*time_rect);
   total += energy;
   return total;
 }
