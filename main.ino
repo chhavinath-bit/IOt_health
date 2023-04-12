@@ -24,6 +24,8 @@ void setup()
   pinMode(A0, INPUT);
     delay(10);
   connectWifi();
+  pinMode(D3, OUTPUT);
+    digitalWrite(D3, HIGH);
 }
  
  
@@ -48,6 +50,7 @@ void loop()
   clEnergy = energyCalculate(indexUV);
   Serial.print("Total Energy on unit area until now "); Serial.print(clEnergy); Serial.println(" mW-s/m^2");
 
+  relayControl(clEnergy);
   delay(1000);
   sendDataTS();
 }
@@ -141,4 +144,11 @@ float energyCalculate(int index){
   float energy  = (uvIntensity*time_rect);
   total += energy;
   return total;
+}
+
+void relayControl(float totalEnergy){
+  int maxEnergy = 120000;
+  if(totalEnergy>=maxEnergy){
+    digitalWrite(D3, LOW);
+  }
 }
