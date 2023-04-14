@@ -4,6 +4,11 @@
 WiFiClient client;
 const int channelID = 2036795;
 String TS_API_KEY ="KQL38FXAIHKOUJFU";
+
+const int readChannelID = 2107463;
+const char* TS_READ_API_KEY = "42J9B556EAEAJ9D8";
+const int fieldNum = 1;
+
 const char* MY_SSID = "OPPO A15";
 const char* MY_PWD = "chhavi3251#";
 const char* TS_SERVER = "api.thingspeak.com";
@@ -15,7 +20,7 @@ float sensorValue;
 float sensorMV;
 int indexUV=0;
 float total, clEnergy, energy = 0;
-
+int lampState = 0;
 SimpleTimer timer;
 
 void setup() 
@@ -147,8 +152,23 @@ float energyCalculate(int index){
 }
 
 void relayControl(float totalEnergy){
-  int maxEnergy = 120000;
+  /*int maxEnergy = 120000;
   if(totalEnergy>=maxEnergy){
     digitalWrite(D3, LOW);
+  }*/
+  // Manual Control of UV Lamp
+  int lampCmd = ThingSpeak.readLongField(readChannelID, fieldNum, TS_READ_API_KEY);
+  statusCode = ThingSpeak.getLastReadStatus();
+  if (statusCode == 200)
+  {
+    Serial.print("Temperature: ");
+    if(lampCmd==0){
+      digitalWrite(D3, LOW);
+    }
   }
+  else
+  {
+    Serial.println("Unable to read channel / No internet connection");
+  }
+  delay(100);
 }
