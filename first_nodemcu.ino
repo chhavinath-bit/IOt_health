@@ -3,14 +3,14 @@
 #include "ThingSpeak.h"
 WiFiClient client;
 // // channel 1
-// const int channelID = 2036795;
-// String TS_API_KEY ="S51ONI7XKJ7RZIB5";
+const int channelID = 2036795;
+String TS_API_KEY ="S51ONI7XKJ7RZIB5";
 // // channel 2
 // // const int channelID = 2105135;
 // // String TS_API_KEY ="VX4DFSC4GMAV995D";
 // // channel 3
-const int channelID = 2105729;
-String TS_API_KEY ="NHHH5KBBA28KFFW1";
+// const int channelID = 2105729;
+// String TS_API_KEY ="NHHH5KBBA28KFFW1";
 
 const int readChannelID = 2107463;
 const char* TS_READ_API_KEY = "42J9B556EAEAJ9D8";
