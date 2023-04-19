@@ -2,8 +2,20 @@
 #include <SimpleTimer.h>
 #include "ThingSpeak.h"
 WiFiClient client;
+// // channel 1
+// const int channelID = 2036795;
+// String TS_API_KEY ="S51ONI7XKJ7RZIB5";
+// // channel 2
 const int channelID = 2105135;
 String TS_API_KEY ="VX4DFSC4GMAV995D";
+// // channel 3
+// const int channelID = 2105729;
+// String TS_API_KEY ="NHHH5KBBA28KFFW1";
+
+const int readChannelID = 2107463;
+const char* TS_READ_API_KEY = "42J9B556EAEAJ9D8";
+const int fieldNum = 1;
+
 const char* MY_SSID = "OPPO A15";
 const char* MY_PWD = "chhavi3251#";
 const char* TS_SERVER = "api.thingspeak.com";
@@ -15,7 +27,7 @@ float sensorValue;
 float sensorMV;
 int indexUV=0;
 float total, clEnergy, energy = 0;
-
+int lampState = 0;
 SimpleTimer timer;
 
 void setup() 
@@ -50,7 +62,7 @@ void loop()
   clEnergy = energyCalculate(indexUV);
   Serial.print("Total Energy on unit area until now "); Serial.print(clEnergy); Serial.println(" mW-s/m^2");
 
-  relayControl(clEnergy);
+  // relayControl(clEnergy);
   delay(1000);
   sendDataTS();
 }
@@ -78,15 +90,14 @@ void sendDataTS(void)
    
     float t = sensorMV;
     float h = indexUV;
-    float e= clEnergy
+    float g= clEnergy;
     // Construct API request body
     String body = "&field1=";
            body += String(t);
            body += "&field2=";
            body += String(h);
            body += "&field3=";
-           body += String(e);
-
+           body += String(g);
           
 
     client.println("POST /update HTTP/1.1");
@@ -101,12 +112,12 @@ void sendDataTS(void)
 
     Serial.print("sensorMV: ");
     Serial.print(t);
-    delay(100);
+    delay(1000);
     Serial.print("indexUV: ");
     Serial.print(h);
-    delay(100)
-    Serial.print("Total Energy: ");
-    Serial.print(e);
+    Serial.print("total energy: ");
+    Serial.print(g);
+    
     
     Serial.println(" Send to Thingspeak.");
   }
@@ -154,8 +165,26 @@ float energyCalculate(int index){
 }
 
 void relayControl(float totalEnergy){
-  int maxEnergy = 120000;
+  int maxEnergy = 500;
   if(totalEnergy>=maxEnergy){
     digitalWrite(D3, LOW);
   }
+  delay(1000);
+  // Manual Control of UV Lamp
+  // long lampCmd = ThingSpeak.readLongField(readChannelID, fieldNum, TS_READ_API_KEY);
+  // int statusCode = ThingSpeak.getLastReadStatus();
+  // Serial.println(lampCmd);
+  // Serial.println(statusCode);
+  // if (statusCode == 200)
+  // {
+  //   Serial.print("Temperature: ");
+  //   if(lampCmd==0){
+  //     digitalWrite(D3, LOW);
+  //   }
+  // }
+  // else
+  // {
+  //   Serial.println("Unable to read channel / No internet connection");
+  // }
+  // delay(100);
 }
