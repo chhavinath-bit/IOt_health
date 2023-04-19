@@ -62,7 +62,7 @@ void loop()
   clEnergy = energyCalculate(indexUV);
   Serial.print("Total Energy on unit area until now "); Serial.print(clEnergy); Serial.println(" mW-s/m^2");
 
-  // relayControl(clEnergy);
+  relayControl(clEnergy);
   delay(1000);
   sendDataTS();
 }
@@ -78,7 +78,8 @@ void connectWifi()
   }
   Serial.println("");
   Serial.println("WiFi Connected");
-  Serial.println("");  
+  Serial.println(""); 
+  ThingSpeak.begin(client) ;
 }
 
 void sendDataTS(void)
@@ -171,20 +172,22 @@ void relayControl(float totalEnergy){
   }
   delay(1000);
   // Manual Control of UV Lamp
-  // long lampCmd = ThingSpeak.readLongField(readChannelID, fieldNum, TS_READ_API_KEY);
-  // int statusCode = ThingSpeak.getLastReadStatus();
-  // Serial.println(lampCmd);
-  // Serial.println(statusCode);
-  // if (statusCode == 200)
-  // {
-  //   Serial.print("Temperature: ");
-  //   if(lampCmd==0){
-  //     digitalWrite(D3, LOW);
-  //   }
-  // }
-  // else
-  // {
-  //   Serial.println("Unable to read channel / No internet connection");
-  // }
-  // delay(100);
+  long lampCmd = ThingSpeak.readLongField(readChannelID, fieldNum, TS_READ_API_KEY);
+  int statusCode = ThingSpeak.getLastReadStatus();
+  Serial.println("lampCmd value: ");
+  Serial.println(lampCmd);
+  Serial.println("statusCode:");
+  Serial.println(statusCode);
+  if (statusCode == 200)
+  {
+    Serial.print("Temperature: ");
+    if(lampCmd==0){
+      digitalWrite(D3, LOW);
+    }
+  }
+  else
+  {
+    Serial.println("Unable to read channel / No internet connection");
+  }
+  delay(100);
 }
