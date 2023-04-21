@@ -34,7 +34,7 @@ float sensorVoltage;
 float sensorValue;
 float sensorMV;
 int indexUV=0;
-float total, clEnergy, energy = 0;
+float total, clEnergy, energy = 0, maxEnergy, tota;
 int lampState = 0;
 SimpleTimer timer;
 
@@ -202,11 +202,12 @@ void relayControl(float totalEnergy){
     
     Serial.print("Requesting URL: ");
     Serial.println(url);
-    client.print(String("GET ") + url + " HTTP/1.1\r\n" +
+    /*client2.print(String("GET ") + url + " HTTP/1.1\r\n" +
                      "Host: " + host + "\r\n" + 
                      //"Content-Type: application/x-www-form-urlencoded\r\n" + "Content-Length: 13\r\n\r\n" +
                       "value1=" + maxEnergy + "\r\n" +  "value2=" + totalEnergy + "\r\n" + "value3=" + yn + "\r\n" + 
-                      "Connection: close\r\n\r\n");
+                      "Connection: close\r\n\r\n");*/
+    sendMail();
   } else if(statusCode!=200){
     Serial.println("Unable to read channel / No internet connection");
   } else{
@@ -233,4 +234,39 @@ void relayControl(float totalEnergy){
     Serial.println("Unable to read channel / No internet connection");
   }*/
   delay(1000);
+}
+
+void sendMail(){
+    float t = clEnergy;
+    float h = maxEnergy;
+    String g= "Yes";
+    // Construct API request body
+    String body = "&value1=";
+           body += String(t);
+           body += "&value2=";
+           body += String(h);
+           body += "&value3=";
+           body += g;
+          
+
+    client.println("POST /update HTTP/1.1");
+    client.println("Host: maker.ifttt.com");
+    //client.println("User-Agent: ESP8266 (nothans)/1.0");
+    client.println("Connection: close");
+    client.println(apiKey);
+    client.println("Content-Type: application/x-www-form-urlencoded");
+    client.println("Content-Length: " + String(body.length()));
+    client.println("");
+    client.print(body);
+
+    Serial.print("clEnnergy: ");
+    Serial.print(t);
+    delay(1000);
+    Serial.print("maxEnergy: ");
+    Serial.print(h);
+    Serial.print("string: ");
+    Serial.print(g);
+    
+    
+    Serial.println(" Send to Mail.");
 }
