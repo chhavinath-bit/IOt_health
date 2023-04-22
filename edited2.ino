@@ -22,6 +22,11 @@ String TS_API_KEY ="S51ONI7XKJ7RZIB5";
 const int readChannelID = 2107463;
 const char* TS_READ_API_KEY = "42J9B556EAEAJ9D8";
 const int fieldNum = 1;
+String TS_WRITE_API_KEY = "LU6RWHX67C8NKYHO";
+
+const int read_s2_ChannelID = 2105135;
+const char* TS_s2_READ_API_KEY = "VX4DFSC4GMAV995D";
+const int sfieldNum = 3;
 
 const char* MY_SSID = "OPPO A15";
 const char* MY_PWD = "chhavi3251#";
@@ -34,6 +39,7 @@ float sensorValue;
 float sensorMV;
 int indexUV=0;
 float total, clEnergy, energy = 0, maxEnergy, tota;
+WiFiClient client2;
 int lampState = 0;
 SimpleTimer timer;
 
@@ -182,89 +188,94 @@ float energyCalculate(int index){
   return total;
 }
 
+float read_channel(float totalEnergy){
+  float energys_2= ThingSpeak.readFloatField(read_s2_ChannelID, sfieldNum, TS_s2_READ_API_KEY);
+  int statusCode2 = ThingSpeak.getLastReadStatus();
+  //float energys_3 = ThingSpeak.readFloatField(read_s3_ChannelID, sfieldNum, TS_s_3READ_API_KEY);
+  //int statusCode3 = ThingSpeak.getLastReadStatus();
+  Serial.print("Energy from Sensor 1: "); Serial.println(totalEnergy);
+  Serial.print("Energy from Sensor 2: "); Serial.println(energys_2);
+  Serial.print("StatusCode2:"); Serial.println(statusCode2);
+  //Serial.print("Energy from Sensor 3: "); Serial.println(energys_3);
+  //Serial.print("StatusCode3:"); Serial.println(statusCode3);
+  return min(totalEnergy, energys_2);
+}
+
 void relayControl(float totalEnergy){
   long lampCmd = ThingSpeak.readLongField(readChannelID, fieldNum, TS_READ_API_KEY);
   int statusCode = ThingSpeak.getLastReadStatus();
-  Serial.println("lampCmd value: ");
-  Serial.println(lampCmd);
-  Serial.println("statusCode:");
-  Serial.println(statusCode);
+  Serial.print("lampCmd value: ");  Serial.println(lampCmd);
+  Serial.print("statusCode:");  Serial.println(statusCode);
   
-  int maxEnergy = 500;
-  if(totalEnergy>=maxEnergy || (statusCode==200 && lampCmd==0)){
-    digitalWrite(D3, LOW);
-    String yn;
-    if(statusCode==200){
-      if(lampCmd==0){yn = "Yes";}
-      else{yn = "No";}
-    } else{yn = "Connection Error";}
-    
-    Serial.print("Requesting URL: ");
-    Serial.println(url);
-    client.print(String("GET ") + url + " HTTP/1.1\r\n" +
-                     "Host: " + host + "\r\n" + 
-                     //"Content-Type: application/x-www-form-urlencoded\r\n" + "Content-Length: 13\r\n\r\n" + "value1=" + i + "\r\n"*/
-                            "Connection: close\r\n\r\n");
-    sendMail();
-  } else if(statusCode!=200){
-    Serial.println("Unable to read channel / No internet connection");
-  } else{
-    Serial.println("Waiting for threshold energy");
-  }
-
-  // Automatic Control of Lamp
-  
-  /*if(totalEnergy>=maxEnergy){
-    digitalWrite(D3, LOW);
-    // Code for sending mail to user that we have turned off the lamp.
-    Serial.print("Requesting URL: ");
-    Serial.println(url);
-  } 
-  // Manual Control of UV Lamp
-  else if (statusCode == 200)
-  {
-    if(lampCmd==0){
-      digitalWrite(D3, LOW);
+  if(statusCode==200){
+    if(lampCmd==1 &&start==1){    // System Startup
+        digitalWrite(D3, HIGH);
+        start = 0;
+    } else if(lampCmd==0 && start==0){      // Google Inactivation
+        digitalWrite(D3, LOW);
+        start = 1;
+        sendMail(0);
+        clEnergy = 0;
+        delay(5000);
+    } else if(totalEnergy>=maxEnergy && start==0){    // Energy Inactivation
+        digitalWrite(D3, LOW);
+        start = 1;
+        sendMail(1);
+        clEnergy = 0;
+        lampCmd = 0;    change_lamp_state(lampCmd);
+        delay(5000);
+    } else if(lampCmd==0 && start==1){
+        Serial.println("Turn the Lamp on Using Google Assistant");
+        delay(1000);
+    } else {
+        Serial.println("Waiting for Threshold Energy");
+        delay(1000);+
     }
-  }
-  else
-  {
+  } else{
     Serial.println("Unable to read channel / No internet connection");
-  }*/
-  delay(1000);
+    delay(1000);
+  }
 }
 
-void sendMail(){
-    float t = clEnergy;
-    float h = maxEnergy;
-    String g= "Yes";
+void sendMail(int ga){
+    HTTPClient http;
+    Serial.print("[HTTP] begin...\n");
+    http.begin(client2, "http://maker.ifttt.com/trigger/uv_limit/with/key/bvZMIZ4hqr_S9APvvleOdD/?value1="+String(min_energy)+"&value2="+String(maxEnergy)+"&value3=YES"); //HTTP
+
+    Serial.print("[HTTP] GET...\n");    // start connection and send HTTP header
+    int httpCode = http.GET();          // httpCode will be negative on error
+    if(httpCode > 0) {
+    // HTTP header has been send and Server response header has been handled
+    Serial.printf("[HTTP] GET code: %d\n", httpCode);
+      if(httpCode == HTTP_CODE_OK) {
+        String payload = http.getString();
+        Serial.println(payload);
+      }
+    } else {
+        Serial.printf("[HTTP] GET failed, error: %s\n", http.errorToString(httpCode).c_str());
+        delay(500); // wait for half sec before retry again
+    }
+    http.end();
+    Serial.println("Sending Mail....");
+}
+
+void change_lamp_state(int lamp){
+   if (client3.connect(TS_SERVER, 80)) {
+    int t = lamp;
     // Construct API request body
-    String body = "&value1=";
-           body += String(t);
-           body += "&value2=";
-           body += String(h);
-           body += "&value3=";
-           body += g;
+    String body = "&field1=";   body += String(t);
           
-
-    client.println("POST /update HTTP/1.1");
-    client.println("Host: maker.ifttt.com");
-    //client.println("User-Agent: ESP8266 (nothans)/1.0");
-    client.println("Connection: close");
-    client.println(apiKey);
-    client.println("Content-Type: application/x-www-form-urlencoded");
-    client.println("Content-Length: " + String(body.length()));
-    client.println("");
-    client.print(body);
-
-    Serial.print("clEnnergy: ");
-    Serial.print(t);
-    delay(1000);
-    Serial.print("maxEnergy: ");
-    Serial.print(h);
-    Serial.print("string: ");
-    Serial.print(g);
-    
-    
-    Serial.println(" Send to Mail.");
+    client3.println("POST /update HTTP/1.1");
+    client3.println("Host: api.thingspeak.com");
+    client3.println("User-Agent: ESP8266 (nothans)/1.0");
+    client3.println("Connection: close");
+    client3.println("X-THINGSPEAKAPIKEY: " + TS_WRITE_API_KEY);
+    client3.println("Content-Type: application/x-www-form-urlencoded");
+    client3.println("Content-Length: " + String(body.length()));
+    client3.println("");
+    client3.print(body);    
+    Serial.println(" Sending Lamp Status Change to Thingspeak.");
+  }
+  client3.stop();
+  Serial.println("Waiting...");
 }
