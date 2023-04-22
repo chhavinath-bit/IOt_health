@@ -21,7 +21,7 @@ String TS_API_KEY ="S51ONI7XKJ7RZIB5";
 const int readChannelID = 2107463;
 const char* TS_READ_API_KEY = "42J9B556EAEAJ9D8";
 const int fieldNum = 1;
-const char* TS_WRITE_API_KEY = "LU6RWHX67C8NKYHO";
+String TS_WRITE_API_KEY = "LU6RWHX67C8NKYHO";
 
 const int read_s2_ChannelID = 2105135;
 const char* TS_s2_READ_API_KEY = "VX4DFSC4GMAV995D";
@@ -208,7 +208,7 @@ void relayControl(float totalEnergy){
 void sendMail(int ga){
     HTTPClient http;
     Serial.print("[HTTP] begin...\n");
-    http.begin("http://maker.ifttt.com/trigger/uv_limit/with/key/bvZMIZ4hqr_S9APvvleOdD/?value1="+String(min_energy)+"&value2="+String(maxEnergy)+"&value3=YES"); //HTTP
+    http.begin(client2, "http://maker.ifttt.com/trigger/uv_limit/with/key/bvZMIZ4hqr_S9APvvleOdD/?value1="+String(min_energy)+"&value2="+String(maxEnergy)+"&value3=YES"); //HTTP
 
     Serial.print("[HTTP] GET...\n");    // start connection and send HTTP header
     int httpCode = http.GET();          // httpCode will be negative on error
