@@ -248,9 +248,10 @@ void relayControl(float totalEnergy){
 }
 
 void sendMail(int ga){
+    String m = (ga==0)?"YES":"NO";
     HTTPClient http;
     Serial.print("[HTTP] begin...\n");
-    http.begin(client2, "http://maker.ifttt.com/trigger/uv_limit/with/key/bvZMIZ4hqr_S9APvvleOdD/?value1="+String(min_energy)+"&value2="+String(maxEnergy)+"&value3=YES"); //HTTP
+    http.begin(client2, "http://maker.ifttt.com/trigger/uv_limit/with/key/bvZMIZ4hqr_S9APvvleOdD/?value1="+String(min_energy)+"&value2="+String(maxEnergy)+"&value3="); //HTTP
 
     Serial.print("[HTTP] GET...\n");    // start connection and send HTTP header
     int httpCode = http.GET();          // httpCode will be negative on error
