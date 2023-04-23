@@ -24,6 +24,8 @@ const char* TS_READ_API_KEY = "42J9B556EAEAJ9D8";
 const int fieldNum = 1;
 const char* TS_WRITE_API_KEY = "LU6RWHX67C8NKYHO";
 
+const int read_s1_ChannelID = 20367
+const char* TS_s1_READ_API_KEY = "J650RMJQU09XIKRZ";
 const int read_s2_ChannelID = 2105135;
 const char* TS_s2_READ_API_KEY = "VX4DFSC4GMAV995D";
 const int sfieldNum = 3;
@@ -203,7 +205,7 @@ float energyCalculate(int index){
 float read_channel(float totalEnergy){
   float energys_2= ThingSpeak.readFloatField(read_s2_ChannelID, sfieldNum, TS_s2_READ_API_KEY);
   int statusCode2 = ThingSpeak.getLastReadStatus();
-  float energys_1 = ThingSpeak.readFloatField(read_channel, sfieldNum, TS_READ_API_KEY);
+  float energys_1 = ThingSpeak.readFloatField(read_s1_ChannelID, sfieldNum, TS_s1_READ_API_KEY);
   int statusCode1 = ThingSpeak.getLastReadStatus();
   Serial.print("Energy from Sensor 1: "); Serial.println(energys_1);
   Serial.print("Energy from Sensor 2: "); Serial.println(energys_2);
