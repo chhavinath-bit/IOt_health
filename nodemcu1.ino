@@ -26,8 +26,8 @@ String TS_WRITE_API_KEY = "LU6RWHX67C8NKYHO";
 const int read_s2_ChannelID = 2105135;
 const char* TS_s2_READ_API_KEY = "VX4DFSC4GMAV995D";
 const int sfieldNum = 3;
-//const int read_s3_ChannelID = 2105729;
-//const char* TS_s_3READ_API_KEY = "NHHH5KBBA28KFFW1";
+const int read_s3_ChannelID = 2105729;
+const char* TS_s_3READ_API_KEY = "NHHH5KBBA28KFFW1";
 
 int sent = 0;
 float sensorVoltage; float sensorValue; float sensorMV;
@@ -199,14 +199,14 @@ float energyCalculate(int index){
 float read_channel(float totalEnergy){
   float energys_2= ThingSpeak.readFloatField(read_s2_ChannelID, sfieldNum, TS_s2_READ_API_KEY);
   int statusCode2 = ThingSpeak.getLastReadStatus();
-  //float energys_3 = ThingSpeak.readFloatField(read_s3_ChannelID, sfieldNum, TS_s_3READ_API_KEY);
-  //int statusCode3 = ThingSpeak.getLastReadStatus();
+  float energys_3 = ThingSpeak.readFloatField(read_s3_ChannelID, sfieldNum, TS_s_3READ_API_KEY);
+  int statusCode3 = ThingSpeak.getLastReadStatus();
   Serial.print("Energy from Sensor 1: "); Serial.println(totalEnergy);
   Serial.print("Energy from Sensor 2: "); Serial.println(energys_2);
   Serial.print("StatusCode2:"); Serial.println(statusCode2);
-  //Serial.print("Energy from Sensor 3: "); Serial.println(energys_3);
-  //Serial.print("StatusCode3:"); Serial.println(statusCode3);
-  return min(totalEnergy, energys_2));
+  Serial.print("Energy from Sensor 3: "); Serial.println(energys_3);
+  Serial.print("StatusCode3:"); Serial.println(statusCode3);
+  return min(totalEnergy, min(energys_2, energys_3));
   delay(500);
 }
 
@@ -224,15 +224,13 @@ void relayControl(float totalEnergy){
         digitalWrite(D3, LOW);
         start = 1;
         sendMail(0);
-        clEnergy = 0;
-        delay(5000);
+        total = 0;
     } else if(totalEnergy>=maxEnergy && start==0){    // Energy Inactivation
         digitalWrite(D3, LOW);
         start = 1;
         sendMail(1);
-        clEnergy = 0;
+        total = 0; 
         lampCmd = 0;    change_lamp_state(lampCmd);
-        delay(5000);
     } else if(lampCmd==0 && start==1){
         Serial.println("Turn the Lamp on Using Google Assistant");
         delay(1000);
