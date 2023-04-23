@@ -101,10 +101,11 @@ void loop()
   clEnergy = energyCalculate(indexUV);
   Serial.print("Total Energy on unit area until now "); Serial.print(clEnergy); Serial.println(" mW-s/m^2");
 
-  sendDataTS();
+  
   //min_energy = read_channel(clEnergy);
   //relayControl(min_energy);
   delay(1000);
+  sendDataTS();
 }
 
 void sendDataTS(void)
