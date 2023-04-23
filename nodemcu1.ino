@@ -81,7 +81,6 @@ void loop()
   min_energy = read_channel(clEnergy);
   relayControl(min_energy);
   delay(1000);
-  sendDataTS();
 }
 
 void connectWifi()
