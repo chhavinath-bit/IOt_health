@@ -80,6 +80,9 @@ void loop()
 
   sendDataTS();
   min_energy = read_channel(clEnergy);
+  if(min_energy>=maxEnergy){
+    total = 0;
+  }
   relayControl(min_energy);
   delay(1000);
 }
@@ -208,7 +211,6 @@ float read_channel(float totalEnergy){
   Serial.print("Energy from Sensor 3: "); Serial.println(energys_3);
   Serial.print("StatusCode3:"); Serial.println(statusCode3);
   return min(totalEnergy, min(energys_2, energys_3));
-  delay(500);
 }
 
 void relayControl(float totalEnergy){
@@ -268,20 +270,20 @@ void sendMail(int ga){
 }
 
 void change_lamp_state(int lamp){
-   if (client.connect(TS_SERVER, 80)) {
+   if (client3.connect(TS_SERVER, 80)) {
     int t = lamp;
     // Construct API request body
     String body = "&field1=";   body += String(t);
           
-    client.println("POST /update HTTP/1.1");
-    client.println("Host: api.thingspeak.com");
-    client.println("User-Agent: ESP8266 (nothans)/1.0");
-    client.println("Connection: close");
-    client.println("X-THINGSPEAKAPIKEY: " + TS_WRITE_API_KEY);
-    client.println("Content-Type: application/x-www-form-urlencoded");
-    client.println("Content-Length: " + String(body.length()));
-    client.println("");
-    client.print(body);    
+    client3.println("POST /update HTTP/1.1");
+    client3.println("Host: api.thingspeak.com");
+    client3.println("User-Agent: ESP8266 (nothans)/1.0");
+    client3.println("Connection: close");
+    client3.println("X-THINGSPEAKAPIKEY: " + TS_WRITE_API_KEY);
+    client3.println("Content-Type: application/x-www-form-urlencoded");
+    client3.println("Content-Length: " + String(body.length()));
+    client3.println("");
+    client3.print(body);    
     Serial.println(" Sending Lamp Status Change to Thingspeak.");
   }
   client.stop();
