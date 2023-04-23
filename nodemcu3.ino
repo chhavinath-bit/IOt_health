@@ -18,7 +18,7 @@ const char* TS_SERVER = "api.thingspeak.com";
 // // channel 3
 const int channelID = 2105729;
 String TS_API_KEY ="NHHH5KBBA28KFFW1";
-/*
+
 const int readChannelID = 2107463;
 const char* TS_READ_API_KEY = "42J9B556EAEAJ9D8";
 const int fieldNum = 1;
@@ -29,12 +29,12 @@ const char* TS_s2_READ_API_KEY = "VX4DFSC4GMAV995D";
 const int sfieldNum = 3;
 const int read_s3_ChannelID = 2105729;
 const char* TS_s_3READ_API_KEY = "NHHH5KBBA28KFFW1";
-*/
+
 int sent = 0;
 float sensorVoltage; float sensorValue; float sensorMV;
 int indexUV=0;
 float total, clEnergy, energy = 0;
-//float maxEnergy = 500, min_energy;
+float maxEnergy = 500, min_energy, k = maxEnergy;
 //int lampState = 0, start = 1;
 SimpleTimer timer;
 /*
@@ -102,10 +102,13 @@ void loop()
   Serial.print("Total Energy on unit area until now "); Serial.print(clEnergy); Serial.println(" mW-s/m^2");
 
   
-  //min_energy = read_channel(clEnergy);
+  min_energy = read_channel(clEnergy);
   //relayControl(min_energy);
-  delay(1000);
+  if(min_energy>=maxEnergy){
+    total = 0;
+  }
   sendDataTS();
+  delay(1000);
 }
 
 void sendDataTS(void)
@@ -196,20 +199,20 @@ float energyCalculate(int index){
   total += energy;
   return total;
 }
-/*
+
 float read_channel(float totalEnergy){
   float energys_2= ThingSpeak.readFloatField(read_s2_ChannelID, sfieldNum, TS_s2_READ_API_KEY);
   int statusCode2 = ThingSpeak.getLastReadStatus();
-  float energys_3 = ThingSpeak.readFloatField(read_s3_ChannelID, sfieldNum, TS_s_3READ_API_KEY);
-  int statusCode3 = ThingSpeak.getLastReadStatus();
-  Serial.print("Energy from Sensor 1: "); Serial.println(totalEnergy);
+  float energys_1 = ThingSpeak.readFloatField(read_channel, sfieldNum, TS_READ_API_KEY);
+  int statusCode1 = ThingSpeak.getLastReadStatus();
+  Serial.print("Energy from Sensor 1: "); Serial.println(energys_1);
   Serial.print("Energy from Sensor 2: "); Serial.println(energys_2);
   Serial.print("StatusCode2:"); Serial.println(statusCode2);
   Serial.print("Energy from Sensor 3: "); Serial.println(energys_3);
-  Serial.print("StatusCode3:"); Serial.println(statusCode3);
-  return min(totalEnergy, min(energys_2,energys_3));
+  Serial.print("StatusCode1:"); Serial.println(statusCode1);
+  return min(totalEnergy, min(energys_2,energys_1));
 }
-
+/*
 void relayControl(float totalEnergy){
   long lampCmd = ThingSpeak.readLongField(readChannelID, fieldNum, TS_READ_API_KEY);
   int statusCode = ThingSpeak.getLastReadStatus();
