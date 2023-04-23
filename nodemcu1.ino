@@ -26,8 +26,8 @@ String TS_WRITE_API_KEY = "LU6RWHX67C8NKYHO";
 const int read_s2_ChannelID = 2105135;
 const char* TS_s2_READ_API_KEY = "VX4DFSC4GMAV995D";
 const int sfieldNum = 3;
-const int read_s3_ChannelID = 2105729;
-const char* TS_s_3READ_API_KEY = "NHHH5KBBA28KFFW1";
+//const int read_s3_ChannelID = 2105729;
+//const char* TS_s_3READ_API_KEY = "NHHH5KBBA28KFFW1";
 
 int sent = 0;
 float sensorVoltage; float sensorValue; float sensorMV;
@@ -65,7 +65,6 @@ void connectWifi()
   Serial.println("WiFi Connected");
   Serial.println(""); 
   ThingSpeak.begin(client) ;
-  ThingSpeak.begin(client3);
 }
 
 void connectMail(){
@@ -159,14 +158,15 @@ float energyCalculate(int index){
 float read_channel(float totalEnergy){
   float energys_2= ThingSpeak.readFloatField(read_s2_ChannelID, sfieldNum, TS_s2_READ_API_KEY);
   int statusCode2 = ThingSpeak.getLastReadStatus();
-  float energys_3 = ThingSpeak.readFloatField(read_s3_ChannelID, sfieldNum, TS_s_3READ_API_KEY);
-  int statusCode3 = ThingSpeak.getLastReadStatus();
+  //float energys_3 = ThingSpeak.readFloatField(read_s3_ChannelID, sfieldNum, TS_s_3READ_API_KEY);
+  //int statusCode3 = ThingSpeak.getLastReadStatus();
   Serial.print("Energy from Sensor 1: "); Serial.println(totalEnergy);
   Serial.print("Energy from Sensor 2: "); Serial.println(energys_2);
   Serial.print("StatusCode2:"); Serial.println(statusCode2);
-  Serial.print("Energy from Sensor 3: "); Serial.println(energys_3);
-  Serial.print("StatusCode3:"); Serial.println(statusCode3);
-  return min(totalEnergy, min(energys_2,energys_3));
+  //Serial.print("Energy from Sensor 3: "); Serial.println(energys_3);
+  //Serial.print("StatusCode3:"); Serial.println(statusCode3);
+  return min(totalEnergy, energys_2));
+  delay(500);
 }
 
 void relayControl(float totalEnergy){
@@ -197,7 +197,7 @@ void relayControl(float totalEnergy){
         delay(1000);
     } else {
         Serial.println("Waiting for Threshold Energy");
-        delay(1000);+
+        delay(1000);
     }
   } else{
     Serial.println("Unable to read channel / No internet connection");
@@ -228,23 +228,23 @@ void sendMail(int ga){
 }
 
 void change_lamp_state(int lamp){
-   if (client3.connect(TS_SERVER, 80)) {
+   if (client.connect(TS_SERVER, 80)) {
     int t = lamp;
     // Construct API request body
     String body = "&field1=";   body += String(t);
           
-    client3.println("POST /update HTTP/1.1");
-    client3.println("Host: api.thingspeak.com");
-    client3.println("User-Agent: ESP8266 (nothans)/1.0");
-    client3.println("Connection: close");
-    client3.println("X-THINGSPEAKAPIKEY: " + TS_WRITE_API_KEY);
-    client3.println("Content-Type: application/x-www-form-urlencoded");
-    client3.println("Content-Length: " + String(body.length()));
-    client3.println("");
-    client3.print(body);    
+    client.println("POST /update HTTP/1.1");
+    client.println("Host: api.thingspeak.com");
+    client.println("User-Agent: ESP8266 (nothans)/1.0");
+    client.println("Connection: close");
+    client.println("X-THINGSPEAKAPIKEY: " + TS_WRITE_API_KEY);
+    client.println("Content-Type: application/x-www-form-urlencoded");
+    client.println("Content-Length: " + String(body.length()));
+    client.println("");
+    client.print(body);    
     Serial.println(" Sending Lamp Status Change to Thingspeak.");
   }
-  client3.stop();
+  client.stop();
   Serial.println("Waiting...");
 }
 
