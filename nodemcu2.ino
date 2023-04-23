@@ -53,20 +53,7 @@ void setup()
   //pinMode(D3, OUTPUT); digitalWrite(D3, LOW);
 }
 
-void connectWifi()
-{
-  Serial.print("Connecting to "+ *MY_SSID);
-  WiFi.begin(MY_SSID, MY_PWD);
-  while (WiFi.status() != WL_CONNECTED) 
-  {
-    delay(1000);
-    Serial.print(".");
-  }
-  Serial.println("");
-  Serial.println("WiFi Connected");
-  Serial.println(""); 
-  ThingSpeak.begin(client) ;
-}
+
 /*
 void connectMail(){
   Serial.print("Connecting to ");
@@ -105,6 +92,21 @@ void loop()
   //relayControl(min_energy);
   delay(1000);
   sendDataTS();
+}
+
+void connectWifi()
+{
+  Serial.print("Connecting to "+ *MY_SSID);
+  WiFi.begin(MY_SSID, MY_PWD);
+  while (WiFi.status() != WL_CONNECTED) 
+  {
+    delay(1000);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.println("WiFi Connected");
+  Serial.println(""); 
+  ThingSpeak.begin(client) ;
 }
 
 void sendDataTS(void)
