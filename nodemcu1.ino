@@ -18,16 +18,17 @@ String TS_API_KEY ="S51ONI7XKJ7RZIB5";
 // const int channelID = 2105729;
 // String TS_API_KEY ="NHHH5KBBA28KFFW1";
 
+//lamp
 const int readChannelID = 2107463;
 const char* TS_READ_API_KEY = "42J9B556EAEAJ9D8";
 const int fieldNum = 1;
 String TS_WRITE_API_KEY = "LU6RWHX67C8NKYHO";
 
 const int read_s2_ChannelID = 2105135;
-const char* TS_s2_READ_API_KEY = "VX4DFSC4GMAV995D";
+const char* TS_s2_READ_API_KEY = "CSCEAZV06WDP75A9";
 const int sfieldNum = 3;
 const int read_s3_ChannelID = 2105729;
-const char* TS_s_3READ_API_KEY = "NHHH5KBBA28KFFW1";
+const char* TS_s_3READ_API_KEY = "5ZFYDI4GZDINS3YN";
 
 int sent = 0;
 float sensorVoltage; float sensorValue; float sensorMV;

@@ -18,18 +18,19 @@ String TS_API_KEY ="VX4DFSC4GMAV995D";
 // const int channelID = 2105729;
 // String TS_API_KEY ="NHHH5KBBA28KFFW1";
 
+// lamp
 const int readChannelID = 2107463;
 const char* TS_READ_API_KEY = "42J9B556EAEAJ9D8";
 const int fieldNum = 1;
 const char* TS_WRITE_API_KEY = "LU6RWHX67C8NKYHO";
 
-const int read_s1_ChannelID = 20367
+const int read_s1_ChannelID = 2036795;
 const char* TS_s1_READ_API_KEY = "J650RMJQU09XIKRZ";
 const int read_s2_ChannelID = 2105135;
-const char* TS_s2_READ_API_KEY = "VX4DFSC4GMAV995D";
+const char* TS_s2_READ_API_KEY = "CSCEAZV06WDP75A9";
 const int sfieldNum = 3;
 const int read_s3_ChannelID = 2105729;
-const char* TS_s_3READ_API_KEY = "NHHH5KBBA28KFFW1";
+const char* TS_s_3READ_API_KEY = "5ZFYDI4GZDINS3YN";
 
 int sent = 0;
 float sensorVoltage; float sensorValue; float sensorMV;
@@ -208,8 +209,8 @@ float read_channel(float totalEnergy){
   float energys_3 = ThingSpeak.readFloatField(read_s3_ChannelID, sfieldNum, TS_s_3READ_API_KEY);
   int statusCode3 = ThingSpeak.getLastReadStatus();
   Serial.print("Energy from Sensor 1: "); Serial.println(energys_1);
+  Serial.print("StatusCode1:"); Serial.println(statusCode1);
   Serial.print("Energy from Sensor 2: "); Serial.println(totalEnergy);
-  Serial.print("StatusCode2:"); Serial.println(statusCode1);
   Serial.print("Energy from Sensor 3: "); Serial.println(energys_3);
   Serial.print("StatusCode3:"); Serial.println(statusCode3);
   return min(totalEnergy, min(energys_1,energys_3));
