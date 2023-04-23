@@ -110,7 +110,7 @@ void connectWifi()
 
 void sendDataTS(void)
 {
-    if (client.connect(TS_SERVER, 80)) {
+    /*if (client.connect(TS_SERVER, 80)) {
     float t = sensorMV; float h = indexUV;  float g= clEnergy;
     // Construct API request body
     String body = "&field1=";   body += String(t);
@@ -127,6 +127,45 @@ void sendDataTS(void)
     client.println("");
     client.print(body);    
     Serial.println(" Sending UV Values to Thingspeak.");
+  }
+  client.stop();
+  Serial.println("Waiting...");*/
+  if (client.connect(TS_SERVER, 80)) {
+    
+    // Measure Analog Input (A0)
+   
+    float t = sensorMV;
+    float h = indexUV;
+    float g= clEnergy;
+    // Construct API request body
+    String body = "&field1=";
+           body += String(t);
+           body += "&field2=";
+           body += String(h);
+           body += "&field3=";
+           body += String(g);
+          
+
+    client.println("POST /update HTTP/1.1");
+    client.println("Host: api.thingspeak.com");
+    client.println("User-Agent: ESP8266 (nothans)/1.0");
+    client.println("Connection: close");
+    client.println("X-THINGSPEAKAPIKEY: " + TS_API_KEY);
+    client.println("Content-Type: application/x-www-form-urlencoded");
+    client.println("Content-Length: " + String(body.length()));
+    client.println("");
+    client.print(body);
+
+    Serial.print("sensorMV: ");
+    Serial.print(t);
+    delay(1000);
+    Serial.print("indexUV: ");
+    Serial.print(h);
+    Serial.print("total energy: ");
+    Serial.print(g);
+    
+    
+    Serial.println(" Send to Thingspeak.");
   }
   client.stop();
   Serial.println("Waiting...");
